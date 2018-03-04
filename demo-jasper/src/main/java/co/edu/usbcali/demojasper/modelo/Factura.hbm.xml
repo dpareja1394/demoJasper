@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Mar 3, 2018 11:07:37 PM by Hibernate Tools 5.1.0.Final -->
+<hibernate-mapping>
+    <class name="co.edu.usbcali.demojasper.modelo.Factura" table="factura" schema="public" optimistic-lock="version">
+        <id name="factId" type="java.lang.Integer">
+            <column name="fact_id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="cliente" class="co.edu.usbcali.demojasper.modelo.Cliente" fetch="select">
+            <column name="clie_id" not-null="true" />
+        </many-to-one>
+        <property name="fecha" type="java.util.Date">
+            <column name="fecha" length="29" not-null="true" />
+        </property>
+        <property name="cabecera" type="java.lang.String">
+            <column name="cabecera" not-null="true" />
+        </property>
+        <set name="detalleFacturas" table="detalle_factura" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="fact_id" not-null="true" />
+            </key>
+            <one-to-many class="co.edu.usbcali.demojasper.modelo.DetalleFactura" />
+        </set>
+    </class>
+</hibernate-mapping>

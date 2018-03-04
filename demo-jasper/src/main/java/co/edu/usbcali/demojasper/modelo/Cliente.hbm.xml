@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Mar 3, 2018 11:07:37 PM by Hibernate Tools 5.1.0.Final -->
+<hibernate-mapping>
+    <class name="co.edu.usbcali.demojasper.modelo.Cliente" table="cliente" schema="public" optimistic-lock="version">
+        <id name="clieId" type="java.lang.Integer">
+            <column name="clie_id" />
+            <generator class="identity" />
+        </id>
+        <property name="nombreCompleto" type="java.lang.String">
+            <column name="nombre_completo" not-null="true" />
+        </property>
+        <property name="identificacion" type="java.lang.String">
+            <column name="identificacion" not-null="true" />
+        </property>
+        <set name="facturas" table="factura" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="clie_id" not-null="true" />
+            </key>
+            <one-to-many class="co.edu.usbcali.demojasper.modelo.Factura" />
+        </set>
+    </class>
+</hibernate-mapping>

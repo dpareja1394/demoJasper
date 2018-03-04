@@ -1,0 +1,159 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</h:head>
+
+<h:body>
+	<ui:composition template="/WEB-INF/facelets/template.xhtml">
+		<ui:define name="body">
+			<f:view>
+				<p:ajaxStatus onstart="PF('statusDialog').show()"
+					onsuccess="PF('statusDialog').hide()" />
+				<p:dialog modal="true" widgetVar="statusDialog" header="Loading"
+					draggable="false" closable="false">
+					<p:graphicImage
+						value="#{facesContext.externalContext.request.scheme}://#{facesContext.externalContext.request.serverName}:#{facesContext.externalContext.request.serverPort}#{facesContext.externalContext.request.contextPath}/images/ajaxloadingbar.gif" />
+				</p:dialog>
+
+				<!-- Expired session -->
+				<p:idleMonitor onactive="PF('sessionTimeOutDialog').show();"
+					timeout="#{session.maxInactiveInterval * 1000}" />
+				<p:dialog modal="true" widgetVar="sessionTimeOutDialog"
+					header="Expired session" draggable="false" closable="false">
+					<h:outputText value="The session is finished" />
+					<input id="confirmBackToLogin" type="button" value="Sign in"
+						onclick="window.location='#{facesContext.externalContext.requestContextPath}/index.jsp';" />
+				</p:dialog>
+
+
+				<h:form id="formDialog">
+					<p:messages id="msg" />
+					<p:growl id="men" />
+					<p:panel id="panelCliente" header="Factura">
+						<h:panelGrid columns="3" id="panelGrid">
+							<h:outputText value="Nombre del Cliente: " />
+							<h:outputText value="#{realizarCompraView.nombreCliente}" />
+							<p:commandButton value="Seleccionar un Cliente"
+								action="#{realizarCompraView.abrirDialogoSeleccionarUnCliente}"
+								update=":dialogCliente" />
+						</h:panelGrid>
+
+						<div align="center">
+							<p:dataTable id="tblProductos"
+								value="#{realizarCompraView.productosDTO}" var="producto"
+								emptyMessage="No hay productos en venta">
+								<p:column headerText="Descripcion">
+									<h:outputText value="#{producto.descripcion}" />
+								</p:column>
+
+								<p:column headerText="Precio Unitario">
+									<h:outputText value="#{producto.valorUnitario}" />
+								</p:column>
+
+								<p:column headerText="Agregar Producto">
+									<p:commandButton icon="ui-icon-plus"
+										update=":dialogCantidadProducto, :formDialog"
+										actionListener="#{realizarCompraView.seleccionarProducto}">
+										<f:attribute name="productoSeleccionado" value="#{producto}" />
+									</p:commandButton>
+								</p:column>
+
+							</p:dataTable>
+						</div>
+					</p:panel>
+
+					<p:panel>
+						<p:dataTable id="tblProductosAComprar"
+							value="#{realizarCompraView.productosAComprar}" var="producto"
+							emptyMessage="No hay en el carrito de compras">
+
+							<p:column headerText="Descripcion">
+								<h:outputText value="#{producto.descripcion}" />
+							</p:column>
+
+							<p:column headerText="Precio Unitario">
+								<h:outputText value="#{producto.valorUnitario}" />
+							</p:column>
+
+							<p:column headerText="Cantidad a Llevar">
+								<h:outputText value="#{producto.cantidad}" />
+							</p:column>
+
+							<p:column headerText="Valor Total">
+								<h:outputText value="#{producto.valorTotal}" />
+							</p:column>
+						</p:dataTable>
+						<div>
+							<p:commandButton value="Realizar compra"
+								action="#{realizarCompraView.realizarCompra}"
+								update=":formDialog" />
+							<p:commandButton value="Generar Factura en PDF"
+								onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+								icon="ui-icon-arrowthichk-s">
+								<p:fileDownload
+									value="#{realizarCompraView.reportePdf}" />
+							</p:commandButton>
+						</div>
+					</p:panel>
+				</h:form>
+
+				<p:dialog id="dialogCliente" appendTo="@(body)" draggable="true"
+					closable="false" visible="#{realizarCompraView.verListaClientes}"
+					resizable="false" modal="true" width="500">
+					<h:form id="formDialogClientes">
+						<p:messages id="msg" />
+						<p:panel id="panelListaClientes">
+							<div align="center">
+								<p:dataTable id="tblClientes"
+									value="#{realizarCompraView.clientesDTO}" var="cliente"
+									emptyMessage="No hay clientes registrados">
+									<p:column headerText="Nombre"
+										filterBy="#{cliente.nombreCompleto}">
+										<h:outputText value="#{cliente.nombreCompleto}" />
+									</p:column>
+
+									<p:column headerText="Identificación"
+										filterBy="#{cliente.identificacion}">
+										<h:outputText value="#{cliente.identificacion}" />
+									</p:column>
+
+									<p:column headerText="Seleccionar">
+										<p:commandButton icon="ui-icon-check"
+											update=":dialogCliente, :formDialog"
+											actionListener="#{realizarCompraView.seleccionarCliente}">
+											<f:attribute name="clienteSeleccionado" value="#{cliente}" />
+										</p:commandButton>
+									</p:column>
+								</p:dataTable>
+							</div>
+						</p:panel>
+					</h:form>
+				</p:dialog>
+
+				<p:dialog id="dialogCantidadProducto" appendTo="@(body)"
+					draggable="true" closable="false"
+					visible="#{realizarCompraView.verIngresarCantidadProducto}"
+					resizable="false" modal="true" width="200">
+					<h:form id="formDialogCantidadProducto">
+						<p:messages id="msg" />
+
+						<h:outputText value="Ingrese la cantidad " />
+						<p:inputNumber binding="#{realizarCompraView.txtCantidadProducto}" />
+
+						<p:commandButton value="Aceptar"
+							action="#{realizarCompraView.agregarProductoALista}"
+							update=":dialogCantidadProducto, :formDialog" />
+
+					</h:form>
+				</p:dialog>
+
+			</f:view>
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>

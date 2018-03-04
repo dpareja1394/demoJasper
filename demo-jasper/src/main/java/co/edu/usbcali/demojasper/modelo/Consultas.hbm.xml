@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Mar 3, 2018 11:07:37 PM by Hibernate Tools 5.1.0.Final -->
+<hibernate-mapping>
+	<sql-query name="consultar_detalle_factura_dado_fact_id">
+		<return-scalar column="descripcion" type="java.lang.String" />
+		<return-scalar column="valorUnitario" type="java.lang.Double" />
+		<return-scalar column="cantidad" type="java.lang.Integer" />
+		<return-scalar column="valorTotal" type="java.lang.Double" />
+		<![CDATA[				
+			select prod.descripcion as descripcion,
+			prod.valor_unitario as valorUnitario,
+			defa.cantidad as cantidad, 
+			(prod.valor_unitario * defa.cantidad) as valorTotal
+			from factura fact
+			inner join detalle_factura defa on fact.fact_id = defa.fact_id
+			inner join producto prod on prod.prod_id = defa.prod_id
+			where fact.fact_id = :pFactId
+			
+		]]>
+	</sql-query></hibernate-mapping>

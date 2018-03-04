@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Mar 3, 2018 11:07:37 PM by Hibernate Tools 5.1.0.Final -->
+<hibernate-mapping>
+    <class name="co.edu.usbcali.demojasper.modelo.Producto" table="producto" schema="public" optimistic-lock="version">
+        <id name="prodId" type="java.lang.Integer">
+            <column name="prod_id" />
+            <generator class="identity" />
+        </id>
+        <property name="descripcion" type="java.lang.String">
+            <column name="descripcion" not-null="true" />
+        </property>
+        <property name="valorUnitario" type="java.lang.Double">
+            <column name="valor_unitario" precision="16" not-null="true" />
+        </property>
+        <set name="detalleFacturas" table="detalle_factura" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="prod_id" not-null="true" />
+            </key>
+            <one-to-many class="co.edu.usbcali.demojasper.modelo.DetalleFactura" />
+        </set>
+    </class>
+</hibernate-mapping>
